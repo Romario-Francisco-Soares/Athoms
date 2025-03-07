@@ -93,10 +93,10 @@ class InsercoesDb:
                 try:
                     collection.insert_one(classe_dados_documento)
                     logger.info(f"Documento inserido na coleção {collection_name}: {classe_dados_documento}")
-                    return 'Inserção realizada com sucesso'
+                    return 'Cadastro realizada com sucesso'
                 except PyMongoError as e:
                     logger.error(f"Erro ao inserir documento na coleção {collection_name}: {e}")
-                    return 'Erro na inserção de dados'
+                    return 'Erro no cadatro'
             else:
                 logger.error(f"Coleção não localizada {collection_name}")
         return 'Documento inválido ou coleção inexistente'

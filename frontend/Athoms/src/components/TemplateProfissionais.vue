@@ -279,15 +279,6 @@ export default {
       context.drawImage(video, 0, 0, canvas.width, canvas.height)
     },
     uploadImage() {
-      //const canvas = this.$refs.canvas
-      //canvas.toBlob((blob) => {
-      //this.formData.matrix_face_url = URL.createObjectURL(blob)
-      //  console.log(blob)
-      //  this.formData.matrix_face = blob
-      //  this.closePopup()
-      //  this.formData.matrix_face = blob
-      //  this.closePopup()
-      //}, 'image/jpeg')
       const canvas = this.$refs.canvas
       const img = canvas.toDataURL('image/jpeg') // Gera o base64
       console.log(img) // Mostra a string base64 no console

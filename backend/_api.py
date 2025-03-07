@@ -1,29 +1,30 @@
 import face_recognition as fr
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
-import json
-from datetime import datetime
 from flask_cors import CORS
+from datetime import datetime
 import base64
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
+
 # Libs internas
-from metodos_identificacao.matrix_digital_identif import identificador_face
 from colecoes.colecoes import BuscasDb, InsercoesDb
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)  # Permite CORS
 
-def converter_base64_imagem(string64):
+def codificar_matrix(string64):
+    """Essa função recebe uma imagem em base64 como entrada e,
+     retorna a codificação facial presente na imagem de entrada"""
     imagem = string64.split('base64,')[1]
     img_data = base64.b64decode(imagem)
     nparr = np.frombuffer(img_data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    fr.face_encodings(frame)
-    return frame
+    rgb_small_frame = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_BGR2RGB)
+    localizacao_do_rosto = fr.face_locations(rgb_small_frame)
+    encodings = fr.face_encodings(rgb_small_frame, localizacao_do_rosto)
+    return encodings[0].tolist()
 
 class Usuario(Resource):
     def get(self):
@@ -42,10 +43,7 @@ class Usuario(Resource):
             data = request.get_json()
             if not data:
                 return jsonify({"error": "Dados não fornecidos"}), 400
-
-            matrix_face = converter_base64_imagem(data.get('matrix_face'))
-            # Convertendo o numpy array para uma lista
-            matrix_face_list = matrix_face.tolist()  # Converte para lista para ser serializável
+            matrix_face = codificar_matrix(data.get('matrix_face'))
 
             json_dados = {
                 "nm_pessoa_fisica": data.get('nome'),
@@ -66,7 +64,7 @@ class Usuario(Resource):
                 "ie_qualificacao": data.get('ie_qualificacao'),
                 "endereco_natural": data.get('endereco_natural'),
                 "endereco_logradouro": data.get('endereco_logradouro'),
-                "matrix_face": matrix_face_list,  # Agora matrix_face é uma lista
+                "matrix_face": matrix_face,
                 "matrix_digital": data.get('matrix_digi'),
                 "matrix_retina": data.get('matrix_retina'),
                 "matrix_senha": data.get('matrix_senh'),
@@ -77,11 +75,10 @@ class Usuario(Resource):
                 "nr_seq_prof_cadastro": data.get('nr_seq_prof_cadastro'),
                 "nr_seq_prof_contratacao": data.get('nr_seq_prof_contratacao')
             }
-
             insercoes_db = InsercoesDb()
-            colRegistro_profissional = insercoes_db.inserir_documento("registro_profissional", json_dados)
+            resultante = insercoes_db.inserir_documento("registro_profissional", json_dados)
 
-            return {'value': colRegistro_profissional}
+            return {'value': resultante}
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
@@ -93,11 +90,9 @@ class Usuario(Resource):
         except ValueError:
             return None
 
-
 class HealthCheck(Resource):
     def get(self):
         return jsonify({"status": "I'm alive!"})
-
 
 api.add_resource(HealthCheck, '/health')
 api.add_resource(Usuario, '/usuario')

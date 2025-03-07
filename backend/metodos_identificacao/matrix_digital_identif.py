@@ -35,7 +35,6 @@ def identificador_face():
         # Lista para armazenar distâncias das faces
         distancias_faces = []
 
-        print(rostos_conhecidos, rosto_desconhecidos)
         for (top, right, bottom, left), rosto_desconhecido in zip(localizacao_dos_rostos, rosto_desconhecidos):
             # Calcula o centro do rosto
             rosto_centro_x = (left + right) // 2

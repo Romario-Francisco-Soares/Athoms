@@ -4,7 +4,8 @@ from colecoes.colecoes import BuscasDb
 melhor_nome, melhor_id, melhor_matrix = identificador_face()
 buscas_db = BuscasDb({"matrix_face": melhor_matrix})
 colProf = buscas_db.retornar_dados('registro_profissional')
-print(colProf[0])
+for a in colProf:
+    print(a)
 
 #from regras_api.json_registro_ponto import registrar_ponto
 #registrar_ponto(colProf["_id"],
