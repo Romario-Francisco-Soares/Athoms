@@ -10,19 +10,20 @@
       </div>
 
       <!-- Login Form -->
-      <form>
+      <form method="POST" action="/login">
+        <!-- Método POST e URL para processar o login -->
         <input type="text" id="login" class="fadeIn second" name="login" placeholder="Usuário" />
         <input
           type="password"
           id="password"
           class="fadeIn third"
-          name="login"
+          name="password"
           placeholder="Senha"
         />
         <input type="submit" class="fadeIn fourth" value="Log In" />
       </form>
 
-      <!-- Remind Passowrd -->
+      <!-- Remind Password -->
       <div id="formFooter">
         <a class="underlineHover" href="">O sistema sob medida para você</a>
       </div>

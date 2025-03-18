@@ -58,6 +58,10 @@ class AcessosBd:
         """Retorna a coleção de definições de sexo."""
         return self.get_collection("definicao_sexo")
 
+    def get_exibicao_cad_prof(self):
+        """Retorna a coleção de definições de sexo."""
+        return self.get_collection("exibicao_cad_prof")
+
 
 class BuscasDb:
     """Classe para buscar dados no banco de dados MongoDB."""
@@ -115,6 +119,7 @@ def registrar_log(descricao_atividade: str, documento: dict) -> bool:
 
 # Exemplo de uso de InsercoesDb
 #insercao = InsercoesDb()
-#documento_profissional = {"nome": "João", "idade": 30}
-#resultado = insercao.inserir_documento("registro_profissional", documento_profissional)
-#print(resultado)
+#documento_profissional = [{ 'nm_campo': 'estadoCivil' }]
+#for x in documento_profissional:
+#    resultado = insercao.inserir_documento("exibicao_cad_prof", x)
+#    print(resultado)

@@ -1,10 +1,8 @@
-<script scoped></script>
+<script></script>
 <template>
-  <!--Links das Fontes e dos Icones-->
   <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet" />
   <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet" />
 
-  <!--Sidebar-->
   <input type="checkbox" id="check" />
 
   <label for="check">
@@ -15,27 +13,27 @@
   <div class="sidebar">
     <header>Menu</header>
 
-    <a href="prof01" class="link-sidebar active">
+    <a class="link-sidebar active">
       <i class="fas fa-qrcode"></i>
       <span>Profissionais</span>
     </a>
 
-    <a href="reg02" class="link-sidebar">
+    <a class="link-sidebar">
       <i class="fas fa-link"></i>
       <span>Registros</span>
     </a>
 
-    <a href="Tur03" class="link-sidebar">
+    <a class="link-sidebar">
       <i class="fas fa-edit"></i>
       <span>Turnos</span>
     </a>
 
-    <a href="reg04" class="link-sidebar">
+    <a class="link-sidebar">
       <i class="far fa-question-circle"></i>
       <span>Registrar</span>
     </a>
 
-    <a href="serv05" class="link-sidebar">
+    <a class="link-sidebar">
       <i class="fas fa-sliders-h"></i>
       <span>Serviços</span>
     </a>
@@ -45,7 +43,6 @@
       <span>Configurações</span>
     </a>
   </div>
-  <!--Sidebar-->
 </template>
 
 <style scoped>
