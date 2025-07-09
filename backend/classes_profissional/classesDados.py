@@ -1,5 +1,6 @@
+import json
 from typing import Optional
-from datetime import date
+from datetime import date, time, datetime
 
 class class_competencias:
     def __init__(self,
@@ -152,7 +153,7 @@ class class_profissional:
                  ie_sexo: str,
                  whatsapp: Optional[str],
                  email: Optional[str],
-		 estado_civil: str,
+                 estado_civil: str,
                  nm_mae: str,
                  whatsapp_mae: Optional[str],
                  nm_pai: str,
@@ -180,7 +181,7 @@ class class_profissional:
         self.ie_sexo = ie_sexo
         self.whatsapp = whatsapp
         self.email = email
-	self.estado_civil = estado_civil
+        self.estado_civil = estado_civil
         self.nm_mae = nm_mae
         self.whatsapp_mae = whatsapp_mae
         self.nm_pai = nm_pai
@@ -236,15 +237,15 @@ class class_profissional:
 
 class class_registro_ponto:
     def __init__(self,
-                 nr_seq_profissional: int,
+                 nr_seq_profissional: str,
                  data_registrada: date,
                  matrix_face: Optional[str],
                  matrix_digital: Optional[str],
                  matrix_retina: Optional[str],
                  matrix_senha: Optional[str],
-                 data_registrada_original: int,
-                 data_ult_alteracao: int,
-                 nr_seq_prof_ult_alter: int):
+                 data_registrada_original: date,
+                 data_ult_alteracao: date,
+                 nr_seq_prof_ult_alter: str):
         self.nr_seq_profissional = nr_seq_profissional
         self.data_registrada = data_registrada
         self.matrix_face = matrix_face
@@ -270,35 +271,87 @@ class class_registro_ponto:
 
 class class_turno:
     def __init__(self,
+                 desc: str,
+                 ano: int,
+                 mes: int,
+                 semana: int,
+                 dia_semana: int,
                  prev_hr_chegada: date,
                  prev_hr_saida_alm: date,
                  prev_hr_ret_alm: date,
                  prev_hr_saida: date,
                  min_intervalo: Optional[int],
                  min_tolerancia_anteced: Optional[int],
-                 min_tolerancia_atraso: Optional[int],
-                 min_hr_semanal: Optional[int],
-                 min_hr_mensal: Optional[int]
+                 min_tolerancia_atraso: Optional[int]
                  ):
-        self.prev_hr_chegada = prev_hr_chegada,
-        self.prev_hr_saida_alm = prev_hr_saida_alm,
-        self.prev_hr_ret_alm = prev_hr_ret_alm,
-        self.prev_hr_saida = prev_hr_saida,
-        self.min_intervalo = min_intervalo,
-        self.min_tolerancia_anteced = min_tolerancia_anteced,
-        self.min_tolerancia_atraso = min_tolerancia_atraso,
-        self.min_hr_semanal = min_hr_semanal,
-        self.min_hr_mensal = min_hr_mensal
+        self.desc = desc
+        self.ano = ano
+        self.mes = mes
+        self.semana = semana
+        self.dia_semana = dia_semana
+        self.prev_hr_chegada = prev_hr_chegada
+        self.prev_hr_saida_alm = prev_hr_saida_alm
+        self.prev_hr_ret_alm = prev_hr_ret_alm
+        self.prev_hr_saida = prev_hr_saida
+        self.min_intervalo = min_intervalo
+        self.min_tolerancia_anteced = min_tolerancia_anteced
+        self.min_tolerancia_atraso = min_tolerancia_atraso
 
-    def criar_json(self):
+    def criar_json_dia(self):
         return {
+            "dia_semana": self.dia_semana,
             "prev_hr_chegada": self.prev_hr_chegada,
-            "prev_hr_saida_alm": self.prev_hr_saida_alm,
-            "prev_hr_ret_alm": self.prev_hr_ret_alm,
-            "prev_hr_saida": self.prev_hr_saida,
+            "prev_hr_saida_alm":  self.prev_hr_saida_alm,
+            "prev_hr_ret_alm":  self.prev_hr_ret_alm,
+            "prev_hr_saida":  self.prev_hr_saida,
             "min_intervalo": self.min_intervalo,
             "min_tolerancia_anteced": self.min_tolerancia_anteced,
-            "min_tolerancia_atraso": self.min_tolerancia_atraso,
-            "min_hr_semanal": self.min_hr_semanal,
-            "min_hr_mensal": self.min_hr_mensal
+            "min_tolerancia_atraso": self.min_tolerancia_atraso
         }
+
+    def criar_json_semana(self):
+        if self.dia_semana == 0:
+            return {"segunda-feira": self.criar_json_dia()}
+        if self.dia_semana == 1:
+            return {"terça-feira": self.criar_json_dia()}
+        if self.dia_semana == 2:
+            return {"quarta-feira": self.criar_json_dia()}
+        if self.dia_semana == 3:
+            return {"quinta-feira": self.criar_json_dia()}
+        if self.dia_semana == 4:
+            return {"sexta-feira": self.criar_json_dia()}
+        if self.dia_semana == 5:
+            return {"sábado": self.criar_json_dia()}
+        if self.dia_semana == 6:
+            return {"domingo": self.criar_json_dia()}
+        if self.dia_semana == 8:
+            todos_dias = list()
+            dias_string = ["segunda-feira", "terca-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado", "domingo"]
+            for dia in range(7):
+                self.dia_semana = dia
+                todos_dias.append({dias_string[dia]: self.criar_json_dia()})
+            self.dia_semana = 8
+            return todos_dias
+
+    def criar_json_escala(self):
+        if self.semana == 1:
+            return {"semana_1": self.criar_json_semana()}
+        if self.semana == 2:
+            return {"semana_2": self.criar_json_semana()}
+        if self.semana == 3:
+            return {"semana_3": self.criar_json_semana()}
+        if self.semana == 4:
+            return {"semana_4": self.criar_json_semana()}
+        if self.semana == 5:
+            return {"semana_5": self.criar_json_semana()}
+        if self.semana == 6:
+            return{
+                "desc": self.desc,
+                "ano": self.ano,
+                "mes": self.mes,
+                "semana_1": self.criar_json_semana(),
+                "semana_2": self.criar_json_semana(),
+                "semana_3": self.criar_json_semana(),
+                "semana_4": self.criar_json_semana(),
+                "semana_5": self.criar_json_semana()
+            }

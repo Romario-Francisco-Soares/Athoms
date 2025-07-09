@@ -10,7 +10,9 @@ def localizar_cadastros() -> [[object], str]:
     lista_cadastros = colProf
     matrix = []
     nomes = []
+    _id = []
     for ls in lista_cadastros:
         nomes.append(ls["nm_pessoa_fisica"])
         matrix.append(ls["matrix_face"])
-    return matrix, nomes
+        _id.append(ls["_id"])
+    return matrix, nomes, _id

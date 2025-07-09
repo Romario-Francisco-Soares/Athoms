@@ -20,7 +20,7 @@
           name="password"
           placeholder="Senha"
         />
-        <input type="submit" class="fadeIn fourth" value="Log In" />
+        <input type="submit" class="fadeIn fourth" value="Entrar" prevent=""/>
       </form>
 
       <!-- Remind Password -->

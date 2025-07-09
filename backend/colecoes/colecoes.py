@@ -62,6 +62,10 @@ class AcessosBd:
         """Retorna a coleção de definições de sexo."""
         return self.get_collection("exibicao_cad_prof")
 
+    def get_exibicao_prof_turno(self):
+        """Retorna a coleção de definições de sexo."""
+        return self.get_collection("definicao_profissional_turno")
+
 
 class BuscasDb:
     """Classe para buscar dados no banco de dados MongoDB."""

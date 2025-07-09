@@ -15,20 +15,33 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/health': {
-        target: 'http://localhost:5000', // endereço do servidor backend
+      '/gif_scanner': {
+        //GIF de scanner
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+      '/usuario': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+      '/video_feed': {
+        target: 'http://127.0.0.1:5000', // endereço do servidor backend
         changeOrigin: true,
         secure: false, // Se estiver usando HTTP não seguro
         ws: true, // Se você estiver usando WebSocket para streaming
       },
-      '/reg02': {
-        target: 'http://localhost:5000', // endereço do servidor backend
+      '/registro_ponto': {
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
         secure: false, // Se estiver usando HTTP não seguro
         ws: true, // Se você estiver usando WebSocket para streaming
       },
-      '/Tur03': {
-        target: 'http://localhost:5000',
+      '/reconhecer_credenciais': {
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
         secure: false, // Se estiver usando HTTP não seguro
         ws: true, // Se você estiver usando WebSocket para streaming

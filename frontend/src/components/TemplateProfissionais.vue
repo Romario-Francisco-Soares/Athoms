@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import InputField from './InputField.vue' // Componente reutilizável de input
+import InputField from './reutilizaveis/InputField.vue' // Componente reutilizável de input
 
 export default {
   components: {
