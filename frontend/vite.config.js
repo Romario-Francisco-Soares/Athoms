@@ -15,8 +15,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/gif_scanner': {
-        //GIF de scanner
+      '/gifs': {
+        //GIF
         target: 'http://127.0.0.1:5000',
         changeOrigin: true,
         secure: false,
@@ -46,8 +46,8 @@ export default defineConfig({
         secure: false, // Se estiver usando HTTP não seguro
         ws: true, // Se você estiver usando WebSocket para streaming
       },
-      '/reg04': {
-        target: 'https://lottie.host/1b6c0048-56c9-41e9-b2ee-f584c94fe5d8/wTVHd6FSLL.lottie',
+      '/login': {
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
         secure: false, // Se estiver usando HTTP não seguro
         ws: true, // Se você estiver usando WebSocket para streaming
