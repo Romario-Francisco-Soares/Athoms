@@ -134,7 +134,7 @@ class autenticacao(Resource):
         try:
             token = None
             data = request.get_json()
-            if not data:
+            if not data.get("login") or not data.get("password"):
                 return jsonify({"error": "Usuário ou Senha não informados"}), 400
             busca = BuscasDb()
             resultante = busca.retornar_dados("acesso")
@@ -229,11 +229,13 @@ class Animacoes(Resource):
             print(f"Erro ao ler o arquivo JSON do GIF: {e}")
             return None
 
-    dir_git_scanner = './static/AnimacaoFace.json'
+    dir_gif = './static/'
 
-    def get(self):
+    def get(self, filename):
         try:
-            gif_data = self.ler_json_gif(self.dir_git_scanner)
+            if not filename.endswith('.json'):
+                return jsonify({"error": "Falha ao carregar o arquivo de animação"}), 500
+            gif_data = self.ler_json_gif(self.dir_gif+filename)
             if not gif_data:
                 return jsonify({"error": "Falha ao carregar o arquivo de animação"}), 500
             return jsonify({"gif": gif_data})
@@ -294,6 +296,7 @@ class Assets(Resource):
 
 # Adicionando os recursos na API
 api.add_resource(Usuario, '/usuario')
+api.add_resource(autenticacao, '/login')
 api.add_resource(Exibicao, '/exibicao')
 api.add_resource(Registro, '/registro_ponto')
 api.add_resource(Reconhecimento, '/reconhecer_credenciais')
@@ -301,16 +304,16 @@ api.add_resource(Reconhecimento, '/reconhecer_credenciais')
 # Adicionando os recursos do Front'end
 api.add_resource(Home,'/')
 api.add_resource(Assets,'/assets/<string:filename>')
-api.add_resource(Animacoes, '/gif_scanner')
+api.add_resource(Animacoes, '/gifs/<string:filename>')
 
 if __name__ == '__main__':
     #import dlib print(dlib.DLIB_USE_CUDA, 'Para processamento GPU')
     rostos_conhecidos, nomes_dos_rostos, _id = localizar_cadastros()
     matrix_conhecidas = carregar_matrix()
-    app.run(debug=True)
+    #app.run(debug=True)
 
-    #serve(app, host="127.0.0.1", port=5000)
-    #tunnel = ngrok.connect(5000, domain=NGROK_DOMAIN, threads=10)
+    serve(app, host="127.0.0.1", port=5000)
+    tunnel = ngrok.connect(5000, domain=NGROK_DOMAIN, threads=10)
 
     # Tem que rodar no cmd para o servidor ngrok executar:
     # site ngrok: https://dashboard.ngrok.com/get-started/setup/python
