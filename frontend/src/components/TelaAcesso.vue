@@ -1,106 +1,162 @@
 <template>
-  <div class="wrapper fadeInDown">
+  <div class="botao-retornar">
+    <button v-if="!conectado" @click="alternarLogin">{{ entraSai }}</button>
+  </div>
+
+  <Gifs id="DotLottieVue" class="ani-face" :animacao_json="nmGif" />
+
+  <div class="wrapper fadeInDown" v-if="entrar">
     <div id="formContent">
-      <!-- Tabs Titles -->
       <h2 class="active">Conectar</h2>
 
-      <!-- Icon -->
-      <div class="fadeIn first">
-        <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
-      </div>
-
-      <!-- Login Form -->
-      <form method="POST" action="/login">
-        <!-- Método POST e URL para processar o login -->
-        <input type="text" id="login" class="fadeIn second" name="login" placeholder="Usuário" />
+      <form @submit.prevent="handleLogin">
+        <input
+          type="text"
+          id="login"
+          class="fadeIn second"
+          name="login"
+          placeholder="Usuário"
+          v-model="login"
+        />
         <input
           type="password"
           id="password"
           class="fadeIn third"
           name="password"
           placeholder="Senha"
+          v-model="password"
         />
-        <input type="submit" class="fadeIn fourth" value="Entrar" prevent=""/>
+        <input type="submit" class="fadeIn fourth" value="Confirmar" />
       </form>
 
-      <!-- Remind Password -->
       <div id="formFooter">
-        <a class="underlineHover" href="">O sistema sob medida para você</a>
+        <h5 class="underlineHover">Em caso de problemas contate a assistência</h5>
       </div>
     </div>
   </div>
 </template>
 
+<script>
+import Gifs from './reutilizaveis/AnimacoesGif.vue'
+
+export default {
+  name: 'AnimacaoFace',
+  components: { Gifs },
+  data() {
+    return {
+      nmGif: 'LineasDeteccion.json',
+      entrar: false,
+      conectado: false,
+      login: '',
+      password: '',
+      entraSai: 'Entrar'
+    }
+  },
+  methods: {
+    alternarLogin() {
+      this.entrar = !this.entrar
+      if (this.entraSai == 'Entrar'){
+        this.entraSai = 'Sair'
+      }else{
+        this.entraSai = 'Entrar'
+      }
+    },
+    async handleLogin() {
+      try {
+        const resposta = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            login: this.login,
+            password: this.password
+          })
+        })
+
+        if (!resposta.ok) {
+          throw new Error('Erro ao autenticar')
+        }
+
+        const data = await resposta.json()
+        console.log('Login bem-sucedido:', data)
+        this.conectado = true
+        this.entrar = false
+      } catch (erro) {
+        console.error(erro)
+        alert('Falha no login.')
+      }
+    }
+  }
+}
+</script>
+
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css?family=Poppins');
 
-/* BASIC */
-
-html {
-  background-color: #56baed;
+.botao-retornar {
+  width: 250px;
+  height: 250px;
+  background-color: rgba(97, 241, 119, 0.6);
+  border-radius: 50%;
+  position: absolute;
+  top: -15vh;
+  left: -5vw;
+  z-index: 1;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  height: 100vh;
+.botao-retornar button {
+  width: 3vw;
+  height: 5vh;
+  position: absolute;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  top: 25vh;
+  left: 8vw;
+  font-family: 'Arial', sans-serif;
+  font-size: clamp(2vw, 2vw, 1.2vw);
+  font-weight: bold;
+  color: white;
+  z-index: 2;
 }
-
-a {
-  color: #92badd;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 400;
+.ani-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  background-color: rgba(1, 32, 13, 1);
+  width: 100%;
+  height: 100%;
+  border-radius: 1.5vw;
 }
-
-h2 {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-  margin: 40px 8px 10px 8px;
-  color: #cccccc;
-}
-
-/* STRUCTURE */
 
 .wrapper {
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  width: 100%;
-  min-height: 100%;
   padding: 20px;
+  z-index: 5;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 #formContent {
-  -webkit-border-radius: 10px 10px 10px 10px;
-  border-radius: 10px 10px 10px 10px;
-  background: #fff;
+  border-radius: 10px;
+  background: #afafafd2;
   padding: 30px;
-  width: 90%;
   max-width: 450px;
-  position: relative;
-  padding: 0px;
-  -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
 
 #formFooter {
-  background-color: #f6f6f6;
-  border-top: 1px solid #dce8f1;
+  background-color: #afafafd2;
+  border-top: 1px solid #afafafd2;
   padding: 25px;
   text-align: center;
-  -webkit-border-radius: 0 0 10px 10px;
   border-radius: 0 0 10px 10px;
-}
-
-/* TABS */
-
-h2.inactive {
-  color: #cccccc;
 }
 
 h2.active {
@@ -108,213 +164,102 @@ h2.active {
   border-bottom: 2px solid #5fbae9;
 }
 
-/* FORM TYPOGRAPHY*/
-
-input[type='button'],
-input[type='submit'],
-input[type='reset'] {
-  background-color: #56baed;
-  border: none;
-  color: white;
-  padding: 15px 80px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  text-transform: uppercase;
-  font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-  box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-  margin: 5px 20px 40px 20px;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-input[type='button']:hover,
-input[type='submit']:hover,
-input[type='reset']:hover {
-  background-color: #39ace7;
-}
-
-input[type='button']:active,
-input[type='submit']:active,
-input[type='reset']:active {
-  -moz-transform: scale(0.95);
-  -webkit-transform: scale(0.95);
-  -o-transform: scale(0.95);
-  -ms-transform: scale(0.95);
-  transform: scale(0.95);
-}
-
 input[type='text'],
-input[type='password'] {
-  background-color: #f6f6f6;
-  border: none;
-  color: #0d0d0d;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 5px;
+input[type='password'],
+input[type='submit'] {
   width: 85%;
-  border: 2px solid #f6f6f6;
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
+  padding: 15px 32px;
+  margin: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid #085001c7;
+  background-color: #afafafd2;
+  color: #0d0d0d;
   transition: all 0.5s ease-in-out;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
 }
 
-input[type='text']:focus {
+input[type='submit'] {
+  background-color: #076814e0;
+  color: #fff;
+  text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(95, 186, 233, 0.4);
+  cursor: pointer;
+}
+
+input[type='submit']:hover {
+  background-color: #029432;
+}
+
+input:focus {
   background-color: #fff;
   border-bottom: 2px solid #5fbae9;
+  outline: none;
 }
 
-input[type='text']:placeholder {
-  color: #cccccc;
+.underlineHover {
+  position: relative;
+  display: inline-block;
+  color: #0d0d0d;
+  cursor: pointer;
 }
 
-/* ANIMATIONS */
-
-/* Simple CSS3 Fade-in-down Animation */
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-  -webkit-animation-duration: 2s;
-  animation-duration: 2s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-
-@-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-@keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@-moz-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.fadeIn {
-  opacity: 0;
-  -webkit-animation: fadeIn ease-in 1;
-  -moz-animation: fadeIn ease-in 1;
-  animation: fadeIn ease-in 1;
-
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  animation-duration: 1s;
-}
-
-.fadeIn.first {
-  -webkit-animation-delay: 0.4s;
-  -moz-animation-delay: 0.4s;
-  animation-delay: 0.4s;
-}
-
-.fadeIn.second {
-  -webkit-animation-delay: 0.6s;
-  -moz-animation-delay: 0.6s;
-  animation-delay: 0.6s;
-}
-
-.fadeIn.third {
-  -webkit-animation-delay: 0.8s;
-  -moz-animation-delay: 0.8s;
-  animation-delay: 0.8s;
-}
-
-.fadeIn.fourth {
-  -webkit-animation-delay: 1s;
-  -moz-animation-delay: 1s;
-  animation-delay: 1s;
-}
-
-/* Simple CSS3 Fade-in Animation */
-.underlineHover:after {
-  display: block;
+.underlineHover::after {
+  content: '';
+  position: absolute;
   left: 0;
   bottom: -10px;
   width: 0;
   height: 2px;
   background-color: #56baed;
-  content: '';
   transition: width 0.2s;
 }
 
-.underlineHover:hover {
-  color: #0d0d0d;
-}
-
-.underlineHover:hover:after {
+.underlineHover:hover::after {
   width: 100%;
 }
 
-/* OTHERS */
-
-*:focus {
-  outline: none;
+.fadeInDown {
+  animation: fadeInDown 2s both;
 }
 
-#icon {
-  width: 60%;
+.fadeIn {
+  animation: fadeIn 1s ease-in forwards;
 }
 
-* {
-  box-sizing: border-box;
+.fadeIn.second { animation-delay: 0.6s; }
+.fadeIn.third { animation-delay: 0.8s; }
+.fadeIn.fourth { animation-delay: 1s; }
+
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(-100%); }
+  100% { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .botao-retornar button {
+    left: 10vw;
+    font-size: clamp(3vw, 2vw, 1.2vw);
+  }
+  .botao-retornar {
+    width: 230px;
+    height: 230px;
+  }
+}
+@media (max-width: 600px) {
+  .botao-retornar button {
+    left: 10vw;
+    top: 20vh;
+    font-size: clamp(4vw, 2vw, 1.2vw);
+  }
+  .botao-retornar {
+    width: 180px;
+    height: 180px;
+  }
+}
+
 </style>

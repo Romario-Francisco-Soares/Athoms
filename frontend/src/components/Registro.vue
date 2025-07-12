@@ -1,5 +1,12 @@
 <template>
   <div id="app">
+    <div class="botaoRetornarEsquerdoSuperior">
+      <button v-if="conectado">Sair</button>
+    </div>
+    <video class="video-bg" autoplay muted loop playsinline>
+      <source src="../assets/tecvideo.mp4" type="video/mp4" />
+      Seu navegador não suporta vídeo HTML5.
+    </video>
     <div class="ContainerTexto">
       <h1 v-if="usuarioIdentificadoNome">
         <b>{{ usuarioIdentificadoNome }}</b> é você?
@@ -8,7 +15,7 @@
     </div>
 
     <div class="ContainerFace" v-if="metodoRegistroSelecionado == 'Face'">
-      <DotLottieVue class="AniFace" />
+      <Gifs id="DotLottieVue" class="AniFace" :animacao_json="nm_anima_json"/>
       <div class="img_cam">
         <CameraCaptura
           ref="CameraCaptura"
@@ -39,14 +46,14 @@
 </template>
 
 <script>
-import DotLottieVue from './reutilizaveis/AnimacaoFace.vue'
+import Gifs from './reutilizaveis/AnimacoesGif.vue'
 import CameraCaptura from './reutilizaveis/CameraCaptura.vue'
 import TecladoNumerico from './reutilizaveis/TecladoNumerico.vue'
 
 export default {
   name: 'App',
   components: {
-    DotLottieVue,
+    Gifs,
     CameraCaptura,
     TecladoNumerico,
   },
@@ -62,8 +69,11 @@ export default {
       matrix_digital: '',
       matrix_retina: '',
       matrix_senha: '',
+      conectado: false,
+      nm_anima_json: 'AnimacaoFace.json',
     }
   },
+
   methods: {
     limparTodasMatrix() {
       this.matrix_face = ''
@@ -170,6 +180,40 @@ export default {
 </script>
 
 <style scoped>
+.botaoRetornarEsquerdoSuperior {
+  width: 250px;
+  height: 250px;
+  background-color: rgba(97, 241, 119, 0.6);
+  border-radius: 50%;
+  position: relative;
+  top: -15vh;
+  left: -5vw;
+}
+.botaoRetornarEsquerdoSuperior button{
+  width: 3vw;
+  height: 5vh;
+  position: relative;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  top: 25vh;
+  left: 0vw;
+  font-family: 'Arial', sans-serif;
+  font-size: clamp(1vw, 2vw, 1.2vw);
+  font-weight: bold;
+  color: white;
+}
+.video-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 30%;
+}
+
 .ContainerTexto {
   justify-items: center;
 }
@@ -184,6 +228,16 @@ export default {
   width: 13vw;
   height: 6vh;
   margin: 3vh 2vw;
+  border-radius: 5vw;
+  font-family: 'Arial', sans-serif;
+  font-size: clamp(10px, 2vw, 1vw);
+  font-weight: bold;
+}
+#DotLottieVue{
+  background-color: rgb(2, 71, 28, 0.6);
+  width: 420px;
+  border-radius: 1.5vw;
+
 }
 #app {
   display: flex;
@@ -192,6 +246,11 @@ export default {
   justify-content: space-between;
   min-width: 100vw;
   min-height: 100vh;
+  background: linear-gradient(90deg,
+                      rgba(12, 63, 15, 0.6),   /* #0c3f0f */
+                      rgba(111, 220, 127, 0.6),/* #6fdc7f */
+                      rgba(79, 196, 106, 0.6), /* #4fc46a */
+                      rgba(58, 173, 90, 0.6)   /* #3aad5a */);
 }
 
 .ContainerFace {

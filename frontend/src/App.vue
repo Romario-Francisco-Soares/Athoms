@@ -18,17 +18,17 @@ export default {
 
 <template>
   <div class="PlanoFundo">
-    <TelaAcesso v-if="autenticado"></TelaAcesso>
+    <TelaAcesso v-if="!autenticado"></TelaAcesso>
     <MenuOpcoes v-if="autenticado"></MenuOpcoes>
     <ProfList v-if="autenticado"></ProfList>
     <Profissionais v-if="autenticado"></Profissionais>
-    <Registro v-if="!autenticado"></Registro>
+    <Registro v-if="autenticado"></Registro>
   </div>
 </template>
 
 <style>
 .PlanoFundo {
-  background: linear-gradient(90deg, #8cf393, #6fdc7f, #4fc46a, #3aad5a);
+
 }
 button {
   background-color: #8cf393;
