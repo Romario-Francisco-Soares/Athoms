@@ -69,21 +69,27 @@ export default {
           body: JSON.stringify({
             login: this.login,
             password: this.password
-          })
+          }),
+          credentials: 'include',  // importante!
         })
-
-        if (!resposta.ok) {
-          throw new Error('Erro ao autenticar')
-        }
-
         const data = await resposta.json()
-        console.log('Login bem-sucedido:', data)
-        this.conectado = true
-        this.entrar = false
+        if (!resposta.ok) {
+          //throw new Error('Erro ao autenticar')
+          alert(data.error)
+        }
+        else{
+          alert(data.message)
+          this.emitirLogin()
+          this.conectado = true
+          this.entrar = false
+        }
       } catch (erro) {
         console.error(erro)
         alert('Falha no login.')
       }
+    },
+    emitirLogin(){
+      this.$emit('autorizado_login', true)
     }
   }
 }

@@ -1,4 +1,29 @@
-<script></script>
+<script>
+  export default{
+    data(){
+      return{
+        conf:false,
+        serv:false,
+        regis:false,
+        turn:false,
+        reg:false,
+        prof:false,
+      }
+    },
+    props:{perfil_acessos: Object},
+    methods:{
+      exibirmenus(){
+        this.perfil_acessos
+      }
+    },
+    watch:{
+      perfil_acessos(novoValor){
+        console.log('novoValor', novoValor)
+        console.log('perfil', this.perfil_acessos)
+      }
+    }
+  }
+</script>
 <template>
   <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet" />
   <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet" />
@@ -13,32 +38,32 @@
   <div class="sidebar">
     <header>Menu</header>
 
-    <a class="link-sidebar active">
+    <a class="link-sidebar active" v-if="prof">
       <i class="fas fa-qrcode"></i>
       <span>Profissionais</span>
     </a>
 
-    <a class="link-sidebar">
+    <a class="link-sidebar"  v-if="reg">
       <i class="fas fa-link"></i>
       <span>Registros</span>
     </a>
 
-    <a class="link-sidebar">
+    <a class="link-sidebar" v-if="turn">
       <i class="fas fa-edit"></i>
       <span>Turnos</span>
     </a>
 
-    <a class="link-sidebar">
+    <a class="link-sidebar"  v-if="regis">
       <i class="far fa-question-circle"></i>
       <span>Registrar</span>
     </a>
 
-    <a class="link-sidebar">
+    <a class="link-sidebar"  v-if="serv">
       <i class="fas fa-sliders-h"></i>
       <span>Serviços</span>
     </a>
 
-    <a href="confg06" class="link-sidebar">
+    <a href="confg06" class="link-sidebar"  v-if="conf">
       <i class="far fa-envelope"></i>
       <span>Configurações</span>
     </a>
