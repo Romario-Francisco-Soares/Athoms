@@ -96,11 +96,12 @@ def carregar_profissionais():
 def carregar_perfis():
     projecao = {"_id":1,
                 "nm_perfil":1,
-                "cadastro_profissionais":1,
+                "consulta_profissional":1,
+                "consulta_ponto":1,
+                "consulta_servicos":1,
                 "cadastro_turnos":1,
-                "cadastro_servicos":1,
-                "conferir_registros":1,
-                "registrar_ponto":1,
+                "cadastro_profissionais":1,
+                "registrar":1,
                 "configuracoes":1,
                 "nr_seq_empresa":1}
     busca = BuscasDb(projecao=projecao)

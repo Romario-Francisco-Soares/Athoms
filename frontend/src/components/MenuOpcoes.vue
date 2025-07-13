@@ -2,18 +2,43 @@
   export default{
     data(){
       return{
-        conf:false,
+        nm_perfil:false,
+        turn:false,
         serv:false,
         regis:false,
-        turn:false,
         reg:false,
+        conf:false,
         prof:false,
+        cadprof: false,
+        nr_seq_empresa: false
       }
     },
     props:{perfil_acessos: Object},
     methods:{
-      exibirmenus(){
-        this.perfil_acessos
+      emitirAcessoSubMenu(event){
+        this.$emit('abrirSubMenu',event)
+      },
+      exibirMenus(){
+        if (this.perfil_acessos) {
+          console.log(
+          this.perfil_acessos.nm_perfil,
+          this.perfil_acessos.cadastro_turnos,
+          this.perfil_acessos.cadastro_servicos,
+          this.perfil_acessos.conferir_registros,
+          this.perfil_acessos.registrar_ponto,
+          this.perfil_acessos.configuracoes,
+          this.perfil_acessos.cadastro_profissionais)
+
+          this.nm_perfil = this.perfil_acessos.nm_perfil,
+          this.prof = this.perfil_acessos.consulta_profissional
+          this.reg = this.perfil_acessos.consulta_ponto,
+          this.serv = this.perfil_acessos.consulta_servicos,
+          this.turn = this.perfil_acessos.cadastro_turnos,
+          this.cadprof = this.perfil_acessos.cadastro_profissionais
+          this.regis = this.perfil_acessos.registrar,
+          this.conf = this.perfil_acessos.configuracoes,
+          this.nr_seq_empresa = this.perfil_acessos.nr_seq_empresa
+        }
       }
     },
     watch:{
@@ -38,32 +63,37 @@
   <div class="sidebar">
     <header>Menu</header>
 
-    <a class="link-sidebar active" v-if="prof">
+    <a class="link-sidebar active" v-if="prof" @click="emitirAcessoSubMenu('consulta_profissional')">
       <i class="fas fa-qrcode"></i>
-      <span>Profissionais</span>
+      <span>Consulta Profissional</span>
     </a>
 
-    <a class="link-sidebar"  v-if="reg">
+    <a class="link-sidebar active" v-if="cadprof" @click="emitirAcessoSubMenu('cadastro_profissionais')">
+      <i class="fas fa-qrcode"></i>
+      <span>Cadastro Profissional</span>
+    </a>
+
+    <a class="link-sidebar"  v-if="reg" @click="emitirAcessoSubMenu('consulta_ponto')">
       <i class="fas fa-link"></i>
-      <span>Registros</span>
+      <span>Consulta Registro</span>
     </a>
 
-    <a class="link-sidebar" v-if="turn">
-      <i class="fas fa-edit"></i>
-      <span>Turnos</span>
-    </a>
-
-    <a class="link-sidebar"  v-if="regis">
+    <a class="link-sidebar"  v-if="regis" @click="emitirAcessoSubMenu('registrar')">
       <i class="far fa-question-circle"></i>
       <span>Registrar</span>
     </a>
 
-    <a class="link-sidebar"  v-if="serv">
-      <i class="fas fa-sliders-h"></i>
-      <span>Serviços</span>
+    <a class="link-sidebar" v-if="turn" @click="emitirAcessoSubMenu('cadastro_turnos')">
+      <i class="fas fa-edit"></i>
+      <span>Cadastro Turno</span>
     </a>
 
-    <a href="confg06" class="link-sidebar"  v-if="conf">
+    <a class="link-sidebar"  v-if="serv" @click="emitirAcessoSubMenu('consulta_servicos')">
+      <i class="fas fa-sliders-h"></i>
+      <span>Consulta Serviços</span>
+    </a>
+
+    <a href="confg06" class="link-sidebar"  v-if="conf" @click="emitirAcessoSubMenu('Configuracoes')">
       <i class="far fa-envelope"></i>
       <span>Configurações</span>
     </a>
