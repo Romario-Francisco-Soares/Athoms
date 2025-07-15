@@ -78,7 +78,6 @@ export default {
         this.dadosImpressao = [...this.dadosImpressao] // Restaura a lista original
         return
       }
-
       this.dadosImpressao = this.resultadoGet.filter((dat) => {
         return Object.values(dat).some((value) => {
           if (value && typeof value === 'string') {
@@ -87,15 +86,19 @@ export default {
         })
       })
     },
-
+    async carregarDados(){
+      await this.exibir_cad_prof()
+      await this.listarCadastros()
+    },
     async listarCadastros() {
       try {
-        const url = new URL('http://localhost:5000/usuario')
-        const response = await fetch(url, {
+        const response = await fetch('/usuario', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',  // importante!
         })
         const data = await response.json()
+        console.log(data)
         this.resultadoGet = data
         this.dadosImpressao = [...data] // Inicializa profissionais com os dados originais
       } catch (error) {
@@ -104,10 +107,10 @@ export default {
     },
     async exibir_cad_prof() {
       try {
-        const url = new URL('http://localhost:5000/exibicao')
-        const response = await fetch(url, {
+        const response = await fetch('/exibicao', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',  // importante!
         })
         const data = await response.json()
         this.lsNomesCampos = data
@@ -128,9 +131,9 @@ export default {
       console.log(`Deletando usuário com índice ${index}`)
     },
   },
-  mounted() {
-    this.listarCadastros(), this.exibir_cad_prof()
-  },
+  //mounted() {
+  //  carregarDados()
+  //},
 }
 </script>
 

@@ -93,7 +93,7 @@
       <span>Consulta Serviços</span>
     </a>
 
-    <a href="confg06" class="link-sidebar"  v-if="conf" @click="emitirAcessoSubMenu('Configuracoes')">
+    <a href="confg06" class="link-sidebar"  v-if="conf" @click="emitirAcessoSubMenu('configuracoes')">
       <i class="far fa-envelope"></i>
       <span>Configurações</span>
     </a>
@@ -109,8 +109,8 @@
 .sidebar {
   position: fixed;
   z-index: 999;
-  width: 240px;
-  left: -240px;
+  width: 340px;
+  left: -340px;
   height: 100%;
   background-color: #202020;
   transition: all 0.5s ease;
@@ -190,13 +190,13 @@ label #cancel {
 }
 
 #check:checked ~ label #btn {
-  margin-left: 245px;
+  margin-left: 345px;
   opacity: 0;
   visibility: hidden;
 }
 
 #check:checked ~ label #cancel {
-  margin-left: 245px;
+  margin-left: 345px;
   opacity: 1;
   visibility: visible;
 }

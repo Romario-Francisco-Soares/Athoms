@@ -119,6 +119,7 @@ export default {
             matrix_senha: this.matrix_senha,
             chave_registro: this.chaveRegistro,
           }),
+          credentials: 'include',  // importante!
         })
         const data = await response.json()
         if (data.status == 200) {
@@ -162,6 +163,7 @@ export default {
             matrix_senha: this.matrix_senha,
             chave_registro: this.chaveRegistro,
           }),
+          credentials: 'include',  // importante!
         })
         const data = await response.json()
         if (data.status == 200) {

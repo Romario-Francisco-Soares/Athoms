@@ -38,6 +38,7 @@ lista_consultados_front = []
 rostos_conhecidos, nomes_dos_rostos, _id = [],[],[]
 matrix_conhecidas = []
 profissionais = []
+acessos = []
 perfis = []
 
 def localizar_matrix_tipo(inf):
@@ -79,7 +80,7 @@ def carregar_matrix():
     if ls:
         return ls
 
-def carregar_profissionais():
+def carregar_acesso():
     projecao = {"usuario": 1,
                "senha": 1,
                "nr_seq_profissional": 1,
@@ -88,6 +89,15 @@ def carregar_profissionais():
                "_id": 1}
     busca = BuscasDb(projecao=projecao)
     ls = list(busca.retornar_dados("acesso"))
+    if not ls:
+        return []
+    if ls:
+        return ls
+
+def carregar_profissional():
+    buscas_db = BuscasDb()
+    ls = list(buscas_db.retornar_dados('registro_profissional'))
+    print('profissionais', ls)
     if not ls:
         return []
     if ls:
@@ -162,7 +172,7 @@ class Autenticacao(Resource):
             if not data.get("login") or not data.get("password"):
                 return {"error": "Usuário ou senha não informados"}, 400
 
-            for prof in profissionais:
+            for prof in acessos:
                 if data.get('login') == prof["usuario"]:
                     senha_descriptografada = descriptografar(prof['senha'])
                     if data.get('password') == senha_descriptografada:
@@ -219,25 +229,34 @@ def codificar_matrix(tipo, string64):
 
 class Usuario(Resource):
     @staticmethod
-    def convert_objectid(document):
-        """Converte ObjectId para string."""
+    def convert_types(document):
+        """Converte campos ObjectId e datetime para string ou ISO format."""
         for key, value in document.items():
             if isinstance(value, ObjectId):
                 document[key] = str(value)
+            elif isinstance(value, datetime.datetime):
+                document[key] = value.isoformat()
+            elif isinstance(value, list):
+                document[key] = [Usuario.convert_types(v) if isinstance(v, dict) else v for v in value]
+            elif isinstance(value, dict):
+                document[key] = Usuario.convert_types(value)
         return document
 
     def get(self):
-        """Recupera usuários com base nos parâmetros passados via query string."""
         try:
-            data = request.get_json()
-            buscas_db = BuscasDb(data.get('filtro'), data.get('projecao'), data.get('opcao'))
-            col_prof = json.loads(dumps(buscas_db.retornar_dados('registro_profissional')))
-            return jsonify(col_prof)
+            global profissionais
+            auth = request.cookies.get("auth_token")
+            dados_profissional = json.loads(descriptografar(auth))
+            profs = []
+            for prof in profissionais:
+                if prof.get("nr_seq_empresa") and str(prof["nr_seq_empresa"]) == dados_profissional["nr_seq_empresa"]["$oid"]:
+                    prof_convertido = Usuario.convert_types(prof.copy())
+                    profs.append(prof_convertido)
+            return jsonify(profs)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
     def post(self):
-        """Insere um novo usuário no banco de dados."""
         try:
             data = request.get_json()
             if not data:
@@ -256,10 +275,15 @@ class Usuario(Resource):
 
 class Exibicao(Resource):
     @staticmethod
-    def cadastro_profissional(filtro: Optional[dict] = None, projecao: Optional[dict] = None, opcao: Optional[List] = None):
+    def cadastro_profissional():
         try:
+            filtro= {}
+            projecao= {}
+            opcao = []
             buscas_db = BuscasDb(filtro, projecao, opcao)
             col_prof = json.loads(dumps(buscas_db.retornar_dados('exibicao_cad_prof')))
+            print(col_prof)
+            print('lista',list(buscas_db.retornar_dados('exibicao_cad_prof')))
             return jsonify(col_prof)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -267,7 +291,9 @@ class Exibicao(Resource):
     def get(self):
         try:
             data = request.get_json()
-            return self.cadastro_profissional(data.get('filtro'), data.get('projecao'), data.get('opcao'))
+            print('exibicao', data)
+            #data.get('filtro'), data.get('projecao'), data.get('opcao')
+            return self.cadastro_profissional()
         except Exception as e:
             print(e)
 
@@ -361,12 +387,14 @@ class Acessos(Resource):
                 return {"error": "Token expirado"}, 401
             # 4. Continua com acesso autorizado
             response = {"dados_perfil": {"nm_perfil":dados["dado_perfil"]['nm_perfil'],
-                                     "cadastro_profissionais": dados["dado_perfil"]['cadastro_profissionais'],
+                                     "consulta_profissional": dados["dado_perfil"]['consulta_profissional'],
+                                     "consulta_ponto": dados["dado_perfil"]['consulta_ponto'],
+                                     "consulta_servicos": dados["dado_perfil"]['consulta_servicos'],
                                      "cadastro_turnos": dados["dado_perfil"]['cadastro_turnos'],
-                                     "cadastro_servicos": dados["dado_perfil"]['cadastro_servicos'],
-                                     "conferir_registros": dados["dado_perfil"]['conferir_registros'],
-                                     "registrar_ponto": dados["dado_perfil"]['registrar_ponto'],
-                                     "configuracoes": dados["dado_perfil"]['configuracoes']}}, 200
+                                     "cadastro_profissionais": dados["dado_perfil"]['cadastro_profissionais'],
+                                     "registrar": dados["dado_perfil"]['registrar'],
+                                     "configuracoes": dados["dado_perfil"]['configuracoes'],
+                                     "nr_seq_empresa": dados["dado_perfil"]['nr_seq_empresa']}}, 200
             return response
         except Exception as e:
             print('except final', e)
@@ -397,7 +425,8 @@ if __name__ == '__main__':
     #import dlib print(dlib.DLIB_USE_CUDA, 'Para processamento GPU')
     rostos_conhecidos, nomes_dos_rostos, _id = localizar_cadastros()
     matrix_conhecidas = carregar_matrix()
-    profissionais = carregar_profissionais()
+    acessos = carregar_acesso()
+    profissionais = carregar_profissional()
     perfis = carregar_perfis()
     #app.run(debug=True)
 
