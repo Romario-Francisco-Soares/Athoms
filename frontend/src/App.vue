@@ -2,29 +2,38 @@
 import TelaAcesso from './components/TelaAcesso.vue'
 import MenuOpcoes from './components/MenuOpcoes.vue'
 import cadastro_profissionais from './components/TemplateProfissionais.vue'
-import consulta_profissional from './components/ProfList.vue'
+import consulta_dados from './components/reutilizaveis/consulta_dados.vue'
 import registrar from './components/Registro.vue'
 
 export default {
-  components: { MenuOpcoes, consulta_profissional, TelaAcesso, cadastro_profissionais, registrar },
+  components: { MenuOpcoes, consulta_dados, TelaAcesso, cadastro_profissionais, registrar },
   data() {
     return {
       autenticado: false,
       dados_perfil: [],
       subMenu: '',
+      endPontDados: '/usuario',
+      endPointNomesCampos: '/exibicao',
+      tipo_exibicao:''
     }
   },
   methods: {
     abrirSubMenu(event){
       this.subMenu = event
+      if (event === 'consulta_ponto'){
+        this.tipo_exibicao = 'consulta_ponto'
+      }
+      if (event === 'consulta_profissional'){
+        this.tipo_exibicao = 'consulta_profissional'
+      }
+      if (event === 'consulta_servicos'){
+        this.tipo_exibicao = 'consulta_servicos'
+      }
       this.$nextTick(() => {
-          if (this.$refs.consulta_profissional && this.$refs.consulta_profissional.carregarDados()) {
-              this.$refs.consulta_profissional.carregarDados();
+          if (this.$refs.consulta_dados && this.$refs.consulta_dados.carregarDados()) {
+              this.$refs.consulta_dados.carregarDados();
           }
-          /*if (this.$refs.consulta_ponto && this.$refs.consulta_ponto.carregarDados) {
-              this.$refs.consulta_ponto.carregarDados();
-          }
-          if (this.$refs.consulta_servicos && this.$refs.consulta_servicos.carregarDados) {
+          /*if (this.$refs.consulta_servicos && this.$refs.consulta_servicos.carregarDados) {
               this.$refs.consulta_servicos.carregarDados();
           }
           if (this.$refs.cadastro_turnos && this.$refs.cadastro_turnos.carregarDados) {
@@ -42,7 +51,6 @@ export default {
         });
     },
     async acessar_sistema(evento) {
-      console.log(evento)
       try {
         const resposta = await fetch('/listar_acessos', {
           method: 'GET',
@@ -51,7 +59,7 @@ export default {
           },
           credentials: 'include',  // importante para enviar cookies
         })
-        if (resposta.ok) {
+        if (resposta.ok && evento) {
           const data = await resposta.json();
           this.dados_perfil = data.dados_perfil;
           this.autenticado = true;
@@ -81,9 +89,16 @@ export default {
   <div class="PlanoFundo">
     <TelaAcesso v-if="!autenticado" @autorizado_login="acessar_sistema($event)"></TelaAcesso>
     <MenuOpcoes ref="MenuOpcoes" v-if="autenticado" :perfil_acessos="dados_perfil" @abrirSubMenu="abrirSubMenu($event)"></MenuOpcoes>
-    <consulta_profissional ref="consulta_profissional" v-if="this.subMenu=='consulta_profissional'"></consulta_profissional>
-    <div ref="consulta_ponto" v-if="this.subMenu=='consulta_ponto'">{{ this.subMenu }}</div> <!--consulta_ponto: -->
-    <div ref="consulta_servicos" v-if="this.subMenu=='consulta_servicos'">{{ this.subMenu }}</div> <!--consulta_servicos: -->
+    <consulta_dados
+      ref="consulta_dados"
+      v-if="subMenu==='consulta_profissional' ||
+            subMenu === 'consulta_ponto' ||
+            subMenu=='consulta_servicos'"
+      :endPontDados="endPontDados"
+      :endPointNomesCampos="endPointNomesCampos"
+      :tipo_exibicao="tipo_exibicao"
+      >
+    </consulta_dados>
     <div ref="cadastro_turnos" v-if="this.subMenu=='cadastro_turnos'">{{ this.subMenu }}</div> <!--cadastro_turnos: -->
     <cadastro_profissionais ref="cadastro_profissionais"  v-if="this.subMenu=='cadastro_profissionais'"></cadastro_profissionais>
     <registrar ref="registrar" v-if="this.subMenu=='registrar'"></registrar>

@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import Gifs from './reutilizaveis/AnimacoesGif.vue'
+import Gifs from './reutilizaveis/animacoes_gif.vue'
 
 export default {
   name: 'AnimacaoFace',

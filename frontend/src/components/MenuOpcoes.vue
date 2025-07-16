@@ -20,15 +20,6 @@
       },
       exibirMenus(){
         if (this.perfil_acessos) {
-          console.log(
-          this.perfil_acessos.nm_perfil,
-          this.perfil_acessos.cadastro_turnos,
-          this.perfil_acessos.cadastro_servicos,
-          this.perfil_acessos.conferir_registros,
-          this.perfil_acessos.registrar_ponto,
-          this.perfil_acessos.configuracoes,
-          this.perfil_acessos.cadastro_profissionais)
-
           this.nm_perfil = this.perfil_acessos.nm_perfil,
           this.prof = this.perfil_acessos.consulta_profissional
           this.reg = this.perfil_acessos.consulta_ponto,
