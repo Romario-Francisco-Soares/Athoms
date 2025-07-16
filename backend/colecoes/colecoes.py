@@ -100,14 +100,15 @@ class InsercoesDb:
             if collection is not None:
                 try:
                     collection.insert_one(classe_dados_documento)
-                    logger.info(f"Documento inserido na coleção {collection_name}: {classe_dados_documento}")
-                    return 'Cadastro realizada com sucesso'
+                    logger.info('Cadastro realizada com sucesso')
+                    return True
                 except PyMongoError as e:
                     logger.error(f"Erro ao inserir documento na coleção {collection_name}: {e}")
-                    return 'Erro no cadatro'
+                    return False
             else:
                 logger.error(f"Coleção não localizada {collection_name}")
-        return 'Documento inválido ou coleção inexistente'
+        logger.error('Documento inválido ou coleção inexistente')
+        return False
 
 def registrar_log(descricao_atividade: str, documento: dict) -> bool:
     """Registra logs de atividades no banco de dados."""

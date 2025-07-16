@@ -46,9 +46,9 @@
 </template>
 
 <script>
-import Gifs from './reutilizaveis/AnimacoesGif.vue'
-import CameraCaptura from './reutilizaveis/CameraCaptura.vue'
-import TecladoNumerico from './reutilizaveis/TecladoNumerico.vue'
+import Gifs from './reutilizaveis/animacoes_gif.vue'
+import CameraCaptura from './reutilizaveis/camera_captura.vue'
+import TecladoNumerico from './reutilizaveis/teclado_numerico.vue'
 
 export default {
   name: 'App',

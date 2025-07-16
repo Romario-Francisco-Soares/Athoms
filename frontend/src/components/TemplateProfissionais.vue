@@ -19,8 +19,8 @@
               @button-click="handleButtonClick($event)"
             />
           </div>
-
-          <div v-if="popupOpen" class="popup-overlay">
+        </form>
+        <div v-if="popupOpen" class="popup-overlay">
             <div class="popup-content">
               <h2>Capturar Foto</h2>
               <video ref="video" id="video" autoplay></video>
@@ -30,14 +30,13 @@
               <button type="button" @click="closePopup">Fechar</button>
             </div>
           </div>
-        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import InputField from './reutilizaveis/InputField.vue' // Componente reutilizável de input
+import InputField from './reutilizaveis/entrada_dados.vue' // Componente reutilizável de input
 
 export default {
   components: {
@@ -223,16 +222,53 @@ export default {
     }
   },
   methods: {
+    limparCampos() {
+      this.formData = {
+        nome: '',
+        dataNascimento: '',
+        sexo: '',
+        whatsapp: '',
+        email: '',
+        estadoCivil: '',
+        nm_mae: '',
+        whatsapp_mae: '',
+        nm_pai: '',
+        whatsapp_pai: '',
+        cd_pis: '',
+        cd_ctps: '',
+        cd_eleitor: '',
+        cd_cpf: '',
+        cd_rg: '',
+        ie_qualificacao: '',
+        endereco_natural: '',
+        endereco_logradouro: '',
+        matrix_face: '',
+        matrix_digi: '',
+        matrix_retina: '',
+        matrix_senh: '',
+        data_cadastro_original: '',
+        data_contratacao: '',
+        data_ult_alteracao: '',
+        nr_seq_prof_ult_alter: '',
+        nr_seq_prof_cadastro: '',
+        nr_seq_prof_contratacao: '',
+      }
+    },
     async cadastrar(usuario) {
       try {
-        const response = await fetch('http://localhost:5000/usuario', {
+        const response = await fetch('/usuario', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(usuario),
         })
-
         const data = await response.json()
-        this.resultadoPost = JSON.stringify(data, null, 2)
+        if (!response.ok){
+          alert(data.error)
+          return false
+        }
+        console.log(data)
+        alert(data.return_post)
+        return true
       } catch (error) {
         console.error('Erro ao cadastrar:', error)
       }
@@ -285,9 +321,11 @@ export default {
       this.formData.matrix_face = img // Atribui a string base64 à variável
       this.closePopup() // Fecha o popup
     },
-    submitForm() {
-      console.log(this.formData)
-      this.cadastrar(this.formData)
+    async submitForm() {
+      const retorno = await this.cadastrar(this.formData)
+      if (retorno){
+        this.limparCampos()
+      }
     },
   },
 }

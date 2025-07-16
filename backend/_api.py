@@ -1,6 +1,7 @@
 import datetime
 import json
 import base64
+import logging
 
 import bson
 import numpy as np
@@ -80,6 +81,26 @@ def carregar_matrix():
     if ls:
         return ls
 
+def label_cadastro_profissional():
+    try:
+        filtro, projecao, opcao= {},{},[]
+        buscas_db = BuscasDb(filtro, projecao, opcao)
+        col_prof = list(buscas_db.retornar_dados('exibicao_cad_prof'))
+        return col_prof
+    except Exception as e:
+        logging.error(e)
+        return []
+
+def label_consulta_ponto():
+    try:
+        filtro, projecao, opcao = {}, {}, []
+        buscas_db = BuscasDb(filtro, projecao, opcao)
+        col_prof = list(buscas_db.retornar_dados('exibicao_consul_ponto'))
+        return col_prof
+    except Exception as e:
+        logging.error(e)
+        return []
+
 def carregar_acesso():
     projecao = {"usuario": 1,
                "senha": 1,
@@ -97,7 +118,6 @@ def carregar_acesso():
 def carregar_profissional():
     buscas_db = BuscasDb()
     ls = list(buscas_db.retornar_dados('registro_profissional'))
-    print('profissionais', ls)
     if not ls:
         return []
     if ls:
@@ -269,31 +289,25 @@ class Usuario(Resource):
                 json_dados = cadastroPessoa(data, matrix_face)
                 insercoes_db = InsercoesDb()
                 resultante = insercoes_db.inserir_documento("registro_profissional", json_dados)
-                return {'value': resultante}
+                if not resultante:
+                    return {'error': 'Erro no cadastro'}, 400
+                return {'return_post': 'Cadastro realizado com sucesso!'}, 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
 class Exibicao(Resource):
-    @staticmethod
-    def cadastro_profissional():
-        try:
-            filtro= {}
-            projecao= {}
-            opcao = []
-            buscas_db = BuscasDb(filtro, projecao, opcao)
-            col_prof = json.loads(dumps(buscas_db.retornar_dados('exibicao_cad_prof')))
-            print(col_prof)
-            print('lista',list(buscas_db.retornar_dados('exibicao_cad_prof')))
-            return jsonify(col_prof)
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
 
-    def get(self):
+    def post(self):
         try:
             data = request.get_json()
-            print('exibicao', data)
-            #data.get('filtro'), data.get('projecao'), data.get('opcao')
-            return self.cadastro_profissional()
+            tipo = data.get('tipo_exibicao')
+            if tipo == "consulta_ponto":
+                return [Usuario.convert_types(lab.copy()) for lab in label_ponto]
+            elif tipo == "consulta_profissional":
+                return [Usuario.convert_types(lab.copy()) for lab in label_prof]
+            else:
+                return []
+
         except Exception as e:
             print(e)
 
@@ -365,14 +379,9 @@ class Reconhecimento(Resource):
                                 })
         return jsonify({"status": 200, "status_registro": 400, "nome": self.us_name, "chave_registro": self.chave_registro.decode()})
 
-from flask import request
-from flask_restful import Resource
-import datetime
-
 class Acessos(Resource):
     def get(self):
         try:
-            # 1. Lê o token do cookie
             token = request.cookies.get("auth_token")
             if not token:
                 return {"error": "Token não encontrado"}, 401
@@ -381,11 +390,9 @@ class Acessos(Resource):
             except Exception as e:
                 print(e)
                 return {"error": "Token inválido"}, 401
-            # 3. Valida data de acesso ou expiração (se for o caso)
             data_acesso = datetime.datetime.fromisoformat(dados["dt_acesso"])
             if (datetime.datetime.now() - data_acesso).seconds > 3600:
                 return {"error": "Token expirado"}, 401
-            # 4. Continua com acesso autorizado
             response = {"dados_perfil": {"nm_perfil":dados["dado_perfil"]['nm_perfil'],
                                      "consulta_profissional": dados["dado_perfil"]['consulta_profissional'],
                                      "consulta_ponto": dados["dado_perfil"]['consulta_ponto'],
@@ -428,6 +435,8 @@ if __name__ == '__main__':
     acessos = carregar_acesso()
     profissionais = carregar_profissional()
     perfis = carregar_perfis()
+    label_ponto = label_consulta_ponto()
+    label_prof = label_cadastro_profissional()
     #app.run(debug=True)
 
     serve(app, host="127.0.0.1", port=5000)
