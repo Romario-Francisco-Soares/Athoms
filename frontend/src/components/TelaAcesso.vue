@@ -1,5 +1,6 @@
 <template>
   <div class="botao-retornar">
+    <UiAlert :show="showAlert" :message="alertMessage" :type="alertType" @close="showAlert = false" />
     <button v-if="!conectado" @click="alternarLogin">{{ entraSai }}</button>
   </div>
 
@@ -38,10 +39,11 @@
 
 <script>
 import Gifs from './reutilizaveis/animacoes_gif.vue'
+import UiAlert from './UiAlert.vue'
 
 export default {
   name: 'AnimacaoFace',
-  components: { Gifs },
+  components: { Gifs, UiAlert },
   data() {
     return {
       nmGif: 'LineasDeteccion.json',
@@ -49,7 +51,10 @@ export default {
       conectado: false,
       login: '',
       password: '',
-      entraSai: 'Entrar'
+      entraSai: 'Entrar',
+      showAlert: false,
+      alertMessage: '',
+      alertType: 'info'
     }
   },
   methods: {
@@ -60,6 +65,11 @@ export default {
       }else{
         this.entraSai = 'Entrar'
       }
+    },
+    showUiAlert(msg, type = 'info') {
+      this.alertMessage = msg
+      this.alertType = type
+      this.showAlert = true
     },
     async handleLogin() {
       try {
@@ -74,18 +84,17 @@ export default {
         })
         const data = await resposta.json()
         if (!resposta.ok) {
-          //throw new Error('Erro ao autenticar')
-          alert(data.error)
+          this.showUiAlert(data.error || 'Erro ao autenticar', 'error')
         }
         else{
-          alert(data.message)
+          this.showUiAlert(data.message || 'Login realizado com sucesso!', 'success')
           this.emitirLogin()
           this.conectado = true
           this.entrar = false
         }
       } catch (erro) {
         console.error(erro)
-        alert('Falha no login.')
+        this.showUiAlert('Falha no login.', 'error')
       }
     },
     emitirLogin(){
@@ -185,7 +194,7 @@ input[type='submit'] {
 }
 
 input[type='submit'] {
-  background-color: #076814e0;
+  background-color: #4f46e5;
   color: #fff;
   text-transform: uppercase;
   box-shadow: 0 10px 30px rgba(95, 186, 233, 0.4);
@@ -193,7 +202,7 @@ input[type='submit'] {
 }
 
 input[type='submit']:hover {
-  background-color: #029432;
+  background-color: #3730a3;
 }
 
 input:focus {

@@ -2,6 +2,9 @@ import json
 from typing import Optional
 from datetime import date, time, datetime
 
+from bson import ObjectId
+
+
 class class_competencias:
     def __init__(self,
                  nr_seq_profissional: int,
@@ -276,13 +279,14 @@ class class_turno:
                  mes: int,
                  semana: int,
                  dia_semana: int,
-                 prev_hr_chegada: date,
-                 prev_hr_saida_alm: date,
-                 prev_hr_ret_alm: date,
-                 prev_hr_saida: date,
+                 prev_hr_chegada: str,
+                 prev_hr_saida_alm: str,
+                 prev_hr_ret_alm: str,
+                 prev_hr_saida: str,
                  min_intervalo: Optional[int],
                  min_tolerancia_anteced: Optional[int],
-                 min_tolerancia_atraso: Optional[int]
+                 min_tolerancia_atraso: Optional[int],
+                 nr_seq_empresa: ObjectId
                  ):
         self.desc = desc
         self.ano = ano
@@ -296,6 +300,7 @@ class class_turno:
         self.min_intervalo = min_intervalo
         self.min_tolerancia_anteced = min_tolerancia_anteced
         self.min_tolerancia_atraso = min_tolerancia_atraso
+        self.nr_seq_empresa = nr_seq_empresa
 
     def criar_json_dia(self):
         return {
@@ -345,10 +350,11 @@ class class_turno:
         if self.semana == 5:
             return {"semana_5": self.criar_json_semana()}
         if self.semana == 6:
-            return{
-                "desc": self.desc,
+            return {
+                "descricao": self.desc,
                 "ano": self.ano,
                 "mes": self.mes,
+                "nr_seq_empresa": self.nr_seq_empresa,
                 "semana_1": self.criar_json_semana(),
                 "semana_2": self.criar_json_semana(),
                 "semana_3": self.criar_json_semana(),

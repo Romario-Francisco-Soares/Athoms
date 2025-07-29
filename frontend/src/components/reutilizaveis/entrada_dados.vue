@@ -1,10 +1,12 @@
 <template>
   <div class="form-group">
-    <label :for="id" class="form-label">{{ label }}</label>
+    <label v-if="type != 'button'" :for="id" class="form-label">{{ label }}</label>
 
     <!-- Input de texto, email ou data -->
     <input
-      v-if="type === 'text' || type === 'email' || type === 'date'"
+      v-if="type === 'text' || type === 'email' ||
+            type === 'date' || type === 'datetime-local' ||
+            type === 'time'"
       :value="modelValue"
       @input="updateModelValue($event.target.value)"
       :type="type"
@@ -13,6 +15,7 @@
       :placeholder="placeholder"
       :required="required"
       class="form-input"
+      :aria-label="label"
     />
 
     <!-- Select -->
@@ -21,10 +24,10 @@
       :value="modelValue"
       @input="updateModelValue($event.target.value)"
       :id="id"
-      type="select"
       :name="name"
       :required="required"
       class="form-input"
+      :aria-label="label"
     >
       <option v-for="(option, index) in options" :key="index" :value="option">
         {{ option }}
@@ -47,13 +50,16 @@
       </div>
     </div>
 
+  </div>
+  <div class="form-group">
     <!-- Button -->
     <button
       v-if="type === 'button'"
       :id="id"
       :name="name"
       @click="handleButtonClick(name)"
-      :class="buttonClass"
+      :class="['form-button', buttonClass]"
+      :aria-label="name"
     >
       {{ name }}
     </button>
@@ -118,16 +124,16 @@ export default {
 <style scoped>
 /* Estilo básico de form-group para o InputField */
 .form-group {
-  margin: 0 auto;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
   position: relative;
-  max-width: 90%;
+  max-width: 95%;
   background-color: #fdfdfd;
 }
 
 .form-label {
   display: block;
   margin-bottom: 5px;
+  font-weight: 600;
 }
 
 .form-input {
@@ -135,21 +141,31 @@ export default {
   padding: 8px 15px;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   outline: none;
   background-color: #fdfdfd;
+  margin-bottom: 0.5rem;
+}
+
+.form-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px #a5b4fc44;
 }
 
 .radio-btn {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
-.radio-btn .radio-label {
+.radio-label {
   cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
 }
 
-.radio-btn .radio-btn-icon {
+.radio-btn-icon {
   display: inline-block;
   width: 18px;
   height: 18px;
@@ -157,9 +173,10 @@ export default {
   border: 2px solid #aaa;
   margin-right: 10px;
   vertical-align: middle;
+  background: #fff;
 }
 
-.radio-btn input[type='radio']:checked + .radio-label .radio-btn-icon {
+.form-new-input:checked + .radio-label .radio-btn-icon {
   background-color: #6fcffb;
 }
 
@@ -167,34 +184,16 @@ export default {
 .form-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #4f46e5;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
 }
 
 .form-button:hover {
-  background-color: #0056b3;
-}
-
-button,
-.send_btn {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #6fcffb;
-  border: none;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-button:hover,
-.send_btn:hover {
-  background-color: #444444;
-}
-
-.form-new-input {
-  opacity: 0;
+  background-color: #3730a3;
 }
 </style>

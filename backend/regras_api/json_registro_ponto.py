@@ -1,4 +1,6 @@
 import json
+import logging
+
 from bson import ObjectId
 from datetime import datetime, timedelta, timezone
 import locale
@@ -11,25 +13,24 @@ def semana_do_mes(data: datetime) -> int:
     return ((data.day - 1) // 7) + 1
 
 
-def inserir_turno(data_atual):
-    turno = class_turno(
-        'Turno para operadores de caixa', 2025, 7, 6, 8,
-        data_atual, data_atual, data_atual, data_atual,
-        15, 5, 5
-    ).criar_json_escala()
-
-    InsercoesDb().inserir_documento('definicao_turno', turno)
-
-
 def pegar_hora(dt, data_base):
-    return dt.replace(
-        year=data_base.year,
-        month=data_base.month,
-        day=data_base.day,
-        tzinfo=timezone.utc,
-        second=0,
-        microsecond=0
-    )
+
+    def formatar_para_datetime(data, data_b):
+        novo_formato_data = datetime.fromisoformat(data)
+        novo_formato_data = novo_formato_data.replace(tzinfo=timezone.utc)
+        return retornar_repalce_horas(novo_formato_data, data_b)
+
+    def retornar_repalce_horas(data, data_b):
+        return data.replace(
+                year=data_b.year,
+                month=data_b.month,
+                day=data_b.day,
+                tzinfo=timezone.utc,
+                second=0,
+                microsecond=0
+            )
+    return  formatar_para_datetime(dt, data_base) if isinstance(dt, str) else retornar_repalce_horas(dt, data_base)
+
 
 
 def validar_regra_registro_ponto(id_usuario, data_atual):
@@ -50,6 +51,7 @@ def validar_regra_registro_ponto(id_usuario, data_atual):
             filtro = {"nr_sequencia_profissional": ObjectId(id_usuario)}
             projecao = {"nr_sequencia_turno": 1, '_id': 0}
             turno = list(BuscasDb(filtro, projecao).retornar_dados('definicao_profissional_turno'))
+            logging.error('Não localizado relação Profissional X Turno') if not turno  else ''
             return turno[0]["nr_sequencia_turno"] if turno else None
         except Exception as e:
             print(f"Erro ao buscar turno do profissional: {e}")
@@ -58,7 +60,9 @@ def validar_regra_registro_ponto(id_usuario, data_atual):
     def obter_turno(nr_seq_turno):
         try:
             filtro = {"_id": nr_seq_turno, "ano": data_atual.year, "mes": data_atual.month}
-            return list(BuscasDb(filtro).retornar_dados('definicao_turno'))
+            turno = list(BuscasDb(filtro).retornar_dados('definicao_turno'))
+            logging.error('Não localizado turno') if not turno  else ''
+            return turno
         except Exception as e:
             print(f"Erro ao buscar informações do turno: {e}")
             return []
@@ -154,3 +158,5 @@ def registrar_ponto(nr_seq_profissional: str,
         return resultado
 
     return False
+
+#inserir_turno(datetime.now())

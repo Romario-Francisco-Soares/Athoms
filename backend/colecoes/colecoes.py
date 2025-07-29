@@ -110,6 +110,25 @@ class InsercoesDb:
         logger.error('Documento inválido ou coleção inexistente')
         return False
 
+    def atualizar_documento(self, collection_name: str, filtro: dict, documento_novo: dict) -> bool:
+        collection = self.acessos_bd.get_collection(collection_name)
+        if collection is None:
+            logger.error(f"Coleção '{collection_name}' não encontrada.")
+            return False
+
+        try:
+            resultado = collection.update_one(filtro, {"$set": documento_novo})
+
+            if resultado.matched_count:
+                logger.info(f"Documento atualizado com sucesso: {resultado.modified_count} modificado(s).")
+                return True
+            else:
+                logger.warning("Nenhum documento correspondente encontrado para atualização.")
+                return False
+        except PyMongoError as e:
+            logger.error(f"Erro ao atualizar documento na coleção {collection_name}: {e}")
+            return False
+
 def registrar_log(descricao_atividade: str, documento: dict) -> bool:
     """Registra logs de atividades no banco de dados."""
     logger.info(f"{descricao_atividade} {documento}")

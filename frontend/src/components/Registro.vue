@@ -42,6 +42,8 @@
         </button>
       </div>
     </div>
+
+    <UiAlert :show="showAlert" :message="alertMessage" :type="alertType" @close="showAlert = false" />
   </div>
 </template>
 
@@ -49,6 +51,7 @@
 import Gifs from './reutilizaveis/animacoes_gif.vue'
 import CameraCaptura from './reutilizaveis/camera_captura.vue'
 import TecladoNumerico from './reutilizaveis/teclado_numerico.vue'
+import UiAlert from './UiAlert.vue'
 
 export default {
   name: 'App',
@@ -56,6 +59,7 @@ export default {
     Gifs,
     CameraCaptura,
     TecladoNumerico,
+    UiAlert
   },
   data() {
     return {
@@ -71,6 +75,9 @@ export default {
       matrix_senha: '',
       conectado: false,
       nm_anima_json: 'AnimacaoFace.json',
+      showAlert: false,
+      alertMessage: '',
+      alertType: 'info'
     }
   },
 
@@ -106,6 +113,11 @@ export default {
         this.$refs.TecladoNumerico.emitirSenha()
       }
     },
+    showUiAlert(msg, type = 'info') {
+      this.alertMessage = msg
+      this.alertType = type
+      this.showAlert = true
+    },
     async enviarCredenciaisReconhecimento() {
       let response = ''
       try {
@@ -119,17 +131,18 @@ export default {
             matrix_senha: this.matrix_senha,
             chave_registro: this.chaveRegistro,
           }),
-          credentials: 'include',  // importante!
+          credentials: 'include',
         })
         const data = await response.json()
         if (data.status == 200) {
           return data
         }
         if (data.status == 400) {
-          alert(data.erro)
+          this.showUiAlert(data.erro || 'Erro ao reconhecer credenciais', 'error')
         }
       } catch (error) {
         console.error('Erro ao armazenar imagem:', error.message)
+        this.showUiAlert('Erro ao reconhecer credenciais', 'error')
       }
     },
     async reconhecerCredenciais() {
@@ -163,17 +176,42 @@ export default {
             matrix_senha: this.matrix_senha,
             chave_registro: this.chaveRegistro,
           }),
-          credentials: 'include',  // importante!
+          credentials: 'include',
         })
         const data = await response.json()
         if (data.status == 200) {
+          this.showUiAlert(data.message || 'Registro realizado com sucesso!', 'success')
           return data
         }
         if (data.status == 400) {
-          alert(data.erro)
+          this.showUiAlert(data.erro || 'Erro ao registrar', 'error')
         }
       } catch (error) {
         console.error('Erro ao armazenar imagem:', error.message)
+        this.showUiAlert('Erro ao registrar', 'error')
+      }
+    },
+    async cadastrarUsuario(usuario) {
+      try {
+        const response = await fetch('/usuario', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...usuario,
+            acao: 'inserir'
+          }),
+          credentials: 'include'
+        })
+        const data = await response.json()
+        if (!response.ok) {
+          this.showUiAlert(data.error || 'Erro ao cadastrar usuário', 'error')
+          return false
+        }
+        this.showUiAlert(data.return_post || 'Usuário cadastrado com sucesso!', 'success')
+        return true
+      } catch (error) {
+        this.showUiAlert('Erro ao cadastrar usuário', error)
+        return false
       }
     },
   },
@@ -234,6 +272,13 @@ export default {
   font-family: 'Arial', sans-serif;
   font-size: clamp(10px, 2vw, 1vw);
   font-weight: bold;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  transition: background 0.2s;
+}
+.ContainerBotoes button:hover {
+  background: #3730a3;
 }
 #DotLottieVue{
   background-color: rgb(2, 71, 28, 0.6);

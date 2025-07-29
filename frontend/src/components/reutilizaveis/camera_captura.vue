@@ -1,7 +1,8 @@
 ﻿<template>
-  <div>
-    <video ref="videoElement" autoplay playsinline></video>
-    <!--<img :src="imageSrc" />-->
+  <div class="camera-captura">
+    <video ref="videoElement" autoplay playsinline aria-label="Câmera"></video>
+    <button class="btn-captura" @click="captureFrame" aria-label="Capturar Foto">Capturar</button>
+    <img v-if="imageSrc" :src="imageSrc" class="preview-img" alt="Prévia da captura" />
   </div>
 </template>
 
@@ -15,7 +16,6 @@ export default {
   },
   mounted() {
     this.startVideo()
-    /*setInterval(this.captureFrame, 2000)*/
   },
   methods: {
     async startVideo() {
@@ -42,9 +42,31 @@ export default {
 </script>
 
 <style scoped>
-video,
-img {
-  width: 420px;
-  height: 400px;
+.camera-captura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+video, .preview-img {
+  width: 100%;
+  max-width: 420px;
+  height: 320px;
+  border-radius: 12px;
+  background: #222;
+  margin-bottom: 0.5rem;
+}
+.btn-captura {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-captura:hover {
+  background: #3730a3;
 }
 </style>

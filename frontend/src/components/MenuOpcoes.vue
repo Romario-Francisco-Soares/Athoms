@@ -10,13 +10,14 @@
         conf:false,
         prof:false,
         cadprof: false,
+        cadturn: false,
         nr_seq_empresa: false
       }
     },
     props:{perfil_acessos: Object},
     methods:{
       emitirAcessoSubMenu(event){
-        this.$emit('abrirSubMenu',event)
+        this.$emit('abrirSubMenu', event)
       },
       exibirMenus(){
         if (this.perfil_acessos) {
@@ -24,7 +25,8 @@
           this.prof = this.perfil_acessos.consulta_profissional
           this.reg = this.perfil_acessos.consulta_ponto,
           this.serv = this.perfil_acessos.consulta_servicos,
-          this.turn = this.perfil_acessos.cadastro_turnos,
+          this.turn = this.perfil_acessos.consulta_turnos,
+          this.cadturn = this.perfil_acessos.cadastro_turnos,
           this.cadprof = this.perfil_acessos.cadastro_profissionais
           this.regis = this.perfil_acessos.registrar,
           this.conf = this.perfil_acessos.configuracoes,
@@ -59,14 +61,24 @@
       <span>Consulta Profissional</span>
     </a>
 
-    <a class="link-sidebar active" v-if="cadprof" @click="emitirAcessoSubMenu('cadastro_profissionais')">
-      <i class="fas fa-qrcode"></i>
-      <span>Cadastro Profissional</span>
-    </a>
-
     <a class="link-sidebar"  v-if="reg" @click="emitirAcessoSubMenu('consulta_ponto')">
       <i class="fas fa-link"></i>
       <span>Consulta Registro</span>
+    </a>
+
+    <a class="link-sidebar"  v-if="reg" @click="emitirAcessoSubMenu('consulta_turno')">
+      <i class="fas fa-link"></i>
+      <span>Consulta Turno</span>
+    </a>
+
+    <a class="link-sidebar"  v-if="serv" @click="emitirAcessoSubMenu('consulta_servicos')">
+      <i class="fas fa-sliders-h"></i>
+      <span>Consulta Serviços</span>
+    </a>
+
+    <a class="link-sidebar active" v-if="cadprof" @click="emitirAcessoSubMenu('cadastro_profissionais')">
+      <i class="fas fa-qrcode"></i>
+      <span>Cadastro Profissional</span>
     </a>
 
     <a class="link-sidebar"  v-if="regis" @click="emitirAcessoSubMenu('registrar')">
@@ -77,11 +89,6 @@
     <a class="link-sidebar" v-if="turn" @click="emitirAcessoSubMenu('cadastro_turnos')">
       <i class="fas fa-edit"></i>
       <span>Cadastro Turno</span>
-    </a>
-
-    <a class="link-sidebar"  v-if="serv" @click="emitirAcessoSubMenu('consulta_servicos')">
-      <i class="fas fa-sliders-h"></i>
-      <span>Consulta Serviços</span>
     </a>
 
     <a href="confg06" class="link-sidebar"  v-if="conf" @click="emitirAcessoSubMenu('configuracoes')">
@@ -105,6 +112,7 @@
   height: 100%;
   background-color: #202020;
   transition: all 0.5s ease;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
 }
 
 .sidebar header {
@@ -115,6 +123,7 @@
   background-color: #202020;
   user-select: none;
   font-family: 'Lato', sans-serif;
+  letter-spacing: 2px;
 }
 
 .sidebar .link-sidebar {
@@ -128,14 +137,15 @@
   border-left: 5px solid transparent;
   font-family: 'Lato', sans-serif;
   text-decoration: none;
-  transition: all 0.5s ease;
+  transition: background 0.2s, color 0.2s;
+  font-size: 1.1rem;
 }
 
 .link-sidebar.active,
 .link-sidebar:hover {
-  border-left: 5px solid var(--accent-color);
+  background: linear-gradient(to left, #32d7fd, #006bdc);
   color: #fff;
-  background: linear-gradient(to left, var(--accent-color), var(--gradient-color));
+  border-left: 5px solid #32d7fd;
 }
 
 .sidebar .link-sidebar i {
